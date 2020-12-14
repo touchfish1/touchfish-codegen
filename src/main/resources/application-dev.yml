@@ -1,0 +1,8 @@
+server:
+  port: 8070
+
+spring:
+  application:
+    name: touchfish-codegen
+  main:
+    allow-bean-definition-overriding: true
