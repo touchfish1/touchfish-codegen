@@ -1,0 +1,54 @@
+import request from '@/utils/request'
+/**
+ * 条件查询列表
+ * @param query
+ */
+export function ${className}List(query) {
+    return request({
+        url: '/${package.ModuleName}/${className}/list',
+        method: 'get',
+        params: query
+    })
+}
+/**
+ * 根据id获取详情
+ * @param Id
+ */
+export function ${className}Info(Id) {
+    return request({
+        url: '/${package.ModuleName}/${className}/info/' + Id,
+        method: 'get'
+    })
+}
+/**
+ * 保存
+ * @param data
+ */
+export function ${className}Save(data) {
+    return request({
+        url: '/${package.ModuleName}/${className}/save',
+        method: 'post',
+        data
+    })
+}
+/**
+ * 更新
+ * @param data
+ */
+export function ${className}Update(data) {
+    return request({
+        url: '/${package.ModuleName}/${className}/update',
+        method: 'post',
+        data
+    })
+}
+/**
+ * 删除
+ * @param data
+ */
+export function ${className}Del(data) {
+    return request({
+        url: '/${package.ModuleName}/${className}/delete/' + data,
+        method: 'delete'
+    })
+}

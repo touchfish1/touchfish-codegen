@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="./css/element-ui.css">
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>代码生成器</el-header>
+        <el-main>
+            <!--表查询-->
+            <div>
+                <el-row>
+                    <el-form ref="form" :rules="rules" :model="form">
+                        <el-col :span="3">
+                            <el-form-item label="数据库连接:" prop="driver">
+                                <el-col :span="12">
+                                    <el-select v-model="form.driver" placeholder="请选数据库连接前缀">
+                                        <el-option label="mysql" value="jdbc:mysql://"></el-option>
+                                        <el-option label="sqlserver" value="jdbc:jtds:sqlserver://"></el-option>
+                                        <el-option label="oracle" value="jdbc:oracle:thin:@//"></el-option>
+                                    </el-select>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="10">
+                            <el-form-item label="连接地址:" prop="address">
+                                <el-col :span="18">
+                                    <el-input v-model="form.address"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-form-item label="用户名:" prop="username">
+                                <el-col :span="12">
+                                    <el-input v-model="form.username"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-form-item label="密码:" prop="password">
+                                <el-col :span="12">
+                                    <el-input type="password" v-model="form.password"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item>
+                                <el-button type="primary" @click="onSubmit('form')">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-form>
+                </el-row>
+            </div>
+            <!-- 数据填充 -->
+            <div>
+                <el-row>
+                    <el-form :model="info" ref="info">
+                        <el-col :span="4">
+                            <el-form-item label="作者名">
+                                <el-col :span="16">
+                                    <el-input v-model="info.author"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item label="模块名">
+                                <el-col :span="16">
+                                    <el-input v-model="info.modelName"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item label="包名">
+                                <el-col :span="16">
+                                    <el-input v-model="info.packageName"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item label="是否使用lombok">
+                                <el-col :span="3">
+                                    <el-switch
+                                            v-model="info.lombok"
+                                            active-color="#13ce66"
+                                            inactive-color="#ff4949">
+                                    </el-switch>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-form-item label="是否使用swagger">
+                                <el-col :span="3">
+                                    <el-switch
+                                            v-model="info.swagger"
+                                            active-color="#13ce66"
+                                            inactive-color="#ff4949">
+                                    </el-switch>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                    </el-form>
+                </el-row>
+            </div>
+            <!--查询信息-->
+            <div>
+                <el-table
+                        ref="multipleTable"
+                        :data="tableData"
+                        style="width: 100%"
+                        @selection-change="handleSelectionChange">
+                    <el-table-column
+                            type="selection"
+                            width="55">
+                    </el-table-column>
+                    <el-table-column
+                            prop="name"
+                            label="表名"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="comment"
+                            label="表注释"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="fields"
+                            label="表字段">
+                    </el-table-column>
+                </el-table>
+                <div style="margin-top: 20px">
+                    <el-button @click="dialogFormVisible = true">生成代码</el-button>
+                </div>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="./js/vue.js"></script>
+<!-- import JavaScript -->
+<script src="./js/element-ui.js"></script>
+<script src="./js/axios.min.js"></script>
+<script>
+    const http = axios.create({
+        baseURL: '/'
+    });
+
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                form: {
+                    driver: '',
+                    address: 'localhost:3306/touchfish_admin?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&useSSL=false&serverTimezone=Asia/Shanghai',
+                    username: 'root',
+                    password: '',
+                    url: ''
+                },
+                info: {
+                    author: '',
+                    modelName: '',
+                    packageName: '',
+                    lombok: false,
+                    swagger: false,
+                    tableNames: []
+                },
+                tableData: [],
+                multipleSelection: [],
+                dialogFormVisible: false,
+                rules: {
+                    driver: [
+                        {required: true, message: '连接驱动不能为空', trigger: 'blur'}
+                    ],
+                    address: [
+                        {required: true, message: 'JDBC连接串不能为空', trigger: 'blur'}
+                    ],
+                    username: [
+                        {required: true, message: '用户名不能为空', trigger: 'blur'}
+                    ],
+                    password: [
+                        {required: true, message: '密码不能为空', trigger: 'blur'}
+                    ]
+                },
+            }
+        },
+        methods: {
+            onSubmit(form) {
+                this.$refs[form].validate((valid) => {
+                    if (valid) {
+                        this.form.url = this.form.driver + this.form.address
+                        http({
+                            url: '/getTableInfo',
+                            method: 'post',
+                            data: this.form
+                        }).then(response => {
+                            const data = response.data;
+                            if (data.code === 200 && data.status) {
+                                this.tableData = data.data.data
+                                console.log("data.data")
+                                console.log(data.data)
+                            }
+                        })
+                            .catch(() => this.$Message.error("查询失败"));
+                        console.log('submit!');
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                })
+
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+                console.log(this.multipleSelection)
+            }, generatorCode() {
+                let tableName = new Array();
+                for (let i = 0; i < this.multipleSelection.length; i++) {
+                    tableName.push(this.multipleSelection[i].name)
+                    console.log(this.multipleSelection[i].name)
+                }
+                http({
+                    url: '/generatorCode',
+                    method: 'post',
+                    data: tableName
+                }).then(response => {
+                    const data = response.data;
+                    if (data.code === 200 && data.status) {
+                        this.tableData = data.data.data
+                        console.log("data.data")
+                        console.log(data.data)
+                    }
+                })
+                    .catch(() => this.$Message.error("查询失败"));
+                console.log('submit!');
+            }
+        }
+    })
+</script>
+</html>
