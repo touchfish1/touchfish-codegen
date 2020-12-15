@@ -13,7 +13,7 @@
             <!--表查询-->
             <div>
                 <el-row>
-                    <el-form ref="form" :rules="rules" :model="form">
+                    <el-form ref="form" :rules="formRules" :model="form">
                         <el-col :span="3">
                             <el-form-item label="数据库连接:" prop="driver">
                                 <el-col :span="12">
@@ -57,25 +57,25 @@
             <!-- 数据填充 -->
             <div>
                 <el-row>
-                    <el-form :model="info" ref="info">
+                    <el-form :model="info" :rules="infoRules" ref="info">
                         <el-col :span="4">
-                            <el-form-item label="作者名">
+                            <el-form-item label="作者名" prop="author">
                                 <el-col :span="16">
                                     <el-input v-model="info.author"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
-                            <el-form-item label="模块名">
+                            <el-form-item label="包名" prop="packageName">
                                 <el-col :span="16">
-                                    <el-input v-model="info.modelName"></el-input>
+                                    <el-input v-model="info.packageName"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
                         <el-col :span="4">
-                            <el-form-item label="包名">
+                            <el-form-item label="模块名" prop="moduleName">
                                 <el-col :span="16">
-                                    <el-input v-model="info.packageName"></el-input>
+                                    <el-input v-model="info.moduleName"></el-input>
                                 </el-col>
                             </el-form-item>
                         </el-col>
@@ -131,7 +131,7 @@
                     </el-table-column>
                 </el-table>
                 <div style="margin-top: 20px">
-                    <el-button @click="dialogFormVisible = true">生成代码</el-button>
+                    <el-button @click="generatorCode">生成代码</el-button>
                 </div>
             </div>
         </el-main>
@@ -160,9 +160,9 @@
                     url: ''
                 },
                 info: {
-                    author: '',
-                    modelName: '',
-                    packageName: '',
+                    author: 'touchfish',
+                    moduleName: 'test',
+                    packageName: 'top.touchfish',
                     lombok: false,
                     swagger: false,
                     tableNames: []
@@ -170,7 +170,7 @@
                 tableData: [],
                 multipleSelection: [],
                 dialogFormVisible: false,
-                rules: {
+                formRules: {
                     driver: [
                         {required: true, message: '连接驱动不能为空', trigger: 'blur'}
                     ],
@@ -182,6 +182,17 @@
                     ],
                     password: [
                         {required: true, message: '密码不能为空', trigger: 'blur'}
+                    ]
+                },
+                infoRules: {
+                    author: [
+                        {required: true, message: '作者不能为空', trigger: 'blur'}
+                    ],
+                    moduleName: [
+                        {required: true, message: '模块名不能为空', trigger: 'blur'}
+                    ],
+                    packageName: [
+                        {required: true, message: '包名不能为空', trigger: 'blur'}
                     ]
                 },
             }
@@ -210,31 +221,45 @@
                         return false;
                     }
                 })
-
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
                 console.log(this.multipleSelection)
             }, generatorCode() {
-                let tableName = new Array();
-                for (let i = 0; i < this.multipleSelection.length; i++) {
-                    tableName.push(this.multipleSelection[i].name)
-                    console.log(this.multipleSelection[i].name)
-                }
-                http({
-                    url: '/generatorCode',
-                    method: 'post',
-                    data: tableName
-                }).then(response => {
-                    const data = response.data;
-                    if (data.code === 200 && data.status) {
-                        this.tableData = data.data.data
-                        console.log("data.data")
-                        console.log(data.data)
+                this.$refs.info.validate((valid) => {
+                    if (valid) {
+                        // 获取选择的tablename
+                        if(this.multipleSelection.length === 0){
+                            this.$message.error('请选择要生成的表');
+                            return ;
+                        }
+                        for (let i = 0; i < this.multipleSelection.length; i++) {
+                            this.info.tableNames.push(this.multipleSelection[i].name)
+                        }
+                        http({
+                            url: '/generatorCode',
+                            method: 'post',
+                            data: this.info,
+                            responseType: 'blob',
+                        }).then(response => {
+                            let blob = new Blob([response.data], {type: 'application/zip'});
+                            console.log(response.data)
+                            let filename = "codegen" + '.zip';
+                            let link = document.createElement('a');
+                            link.href = URL.createObjectURL(blob);
+                            link.download = filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            window.setTimeout(function () {
+                                URL.revokeObjectURL(blob);
+                                document.body.removeChild(link);
+                            }, 0)
+                        })
+                            .catch(() => this.$Message.error("下载失败"));
+                    } else {
+                        return false;
                     }
                 })
-                    .catch(() => this.$Message.error("查询失败"));
-                console.log('submit!');
             }
         }
     })

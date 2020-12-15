@@ -1,9 +1,11 @@
 package top.touchfish.controller;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,27 +54,14 @@ public class CodeGenController {
     public void generatorCode(@RequestBody GenInfoDto genInfoDto, HttpServletResponse response) throws IOException {
         byte[] bytes = codeGenService.generatorCode(genInfoDto);
         response.reset();
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", genInfoDto.getTableNames()));
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", "codegen"));
         response.addHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(bytes.length));
         response.setContentType("application/octet-stream; charset=UTF-8");
 
         IoUtil.write(response.getOutputStream(), Boolean.TRUE, bytes);
+        // 删除文件
+        String codegen = ResourceUtils.getURL("classpath:codegen").getPath();
+        FileUtil.del(codegen);
     }
 
-    /**
-     * 下载生成的代码
-     *
-     * @param response
-     * @throws IOException
-     */
-    @PostMapping("generatorCode1")
-    public void generatorCode1(HttpServletResponse response) throws IOException {
-        byte[] bytes = codeGenService.generatorCode1();
-        response.reset();
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", "gen"));
-        response.addHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(bytes.length));
-        response.setContentType("application/octet-stream; charset=UTF-8");
-
-        IoUtil.write(response.getOutputStream(), Boolean.TRUE, bytes);
-    }
 }

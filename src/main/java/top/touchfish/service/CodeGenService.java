@@ -30,5 +30,4 @@ public interface CodeGenService {
      */
     public byte[] generatorCode(GenInfoDto genInfoDto) throws IOException;
 
-    public byte[] generatorCode1() throws IOException;
 }

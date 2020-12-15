@@ -17,4 +17,6 @@ public class GenInfoDto implements Serializable {
     private String author;
     private String moduleName;
     private String packageName;
+    private Boolean lombok;
+    private Boolean swagger;
 }
