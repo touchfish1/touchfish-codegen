@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
@@ -16,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import top.touchfish.common.CodeGenConstant;
 import top.touchfish.common.R;
 import top.touchfish.dto.GenInfoDto;
 import top.touchfish.dto.TableInfoDto;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -46,6 +49,12 @@ import java.util.zip.ZipOutputStream;
 public class CodeGenServiceImpl implements CodeGenService {
     private DataSourceConfig dsc;
 
+    /**
+     * 查询TableInfo接口
+     *
+     * @param tableInfoDto
+     * @return
+     */
     @Override
     public R getTableInfo(TableInfoDto tableInfoDto) {
         dsc = new DataSourceConfig();
@@ -58,6 +67,12 @@ public class CodeGenServiceImpl implements CodeGenService {
         return R.success(buildVo(autoGenerator.getAllTableInfoList(autoGenerator.builder(dsc))));
     }
 
+    /**
+     * 生成代码下载
+     *
+     * @param genInfoDto
+     * @return
+     */
     @Override
     public byte[] generatorCode(GenInfoDto genInfoDto) throws IOException {
         // 生成文件
@@ -65,7 +80,7 @@ public class CodeGenServiceImpl implements CodeGenService {
         // 打包压缩
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
-        String codegen = ResourceUtils.getURL("classpath:codegen").getPath();
+        String codegen = ResourceUtils.getURL("classpath:codegen" ).getPath();
         ZipUtils.doCompress(codegen, zip);
         IoUtil.close(zip);
         // 下载
@@ -82,13 +97,13 @@ public class CodeGenServiceImpl implements CodeGenService {
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
-        final String outPath = ResourceUtils.getURL("classpath:").getPath() + "/codegen";
+        final String outPath = ResourceUtils.getURL("classpath:" ).getPath() + "/codegen";
         gc.setOutputDir(outPath);
         gc.setAuthor(genInfoDto.getAuthor());
         gc.setOpen(false);
         //实体属性 Swagger2 注解
         gc.setSwagger2(genInfoDto.getSwagger());
-        gc.setServiceName("%sService");
+        gc.setServiceName("%sService" );
         mpg.setGlobalConfig(gc);
         // 设置数据源
         mpg.setDataSource(dsc);
@@ -103,16 +118,27 @@ public class CodeGenServiceImpl implements CodeGenService {
             public void initMap() {
 
             }
+
             @Override
             public Map<String, Object> prepareObjectMap(Map<String, Object> objectMap) {
-                TableInfo table = (TableInfo) objectMap.get("table");
-                // 在配置中放入小驼峰的className 即为tablename的小驼峰写法
-                objectMap.put("className", CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, table.getName()));
+                // 获取到的table
+                TableInfo table = (TableInfo) objectMap.get("table" );
+                // 获取到的entity
+                String entity = (String) objectMap.get("entity" );
+                // 在配置中放入小驼峰的className 即为entity的小驼峰写法
+                objectMap.put("className", toLowerCaseFirstOne(entity));
+                // 放入pk主键名称
+                TableField tableField = table.getFields().stream().filter(f -> f.isKeyFlag()).findFirst().get();
+                objectMap.put("pkName", tableField.getPropertyName());
+                objectMap.put("pkType", tableField.getColumnType().getType());
                 return objectMap;
             }
         };
         String xmlPath = "/templates/mapper.xml.vm";
+        // js模板
         String apiPath = "/templates/api.js.vm";
+        // vue模板
+        String vuePath = "/templates/view.vue.vm";
 
         // 自定义输出配置
         List<FileOutConfig> focList = new ArrayList<>();
@@ -132,7 +158,16 @@ public class CodeGenServiceImpl implements CodeGenService {
             public String outputFile(TableInfo tableInfo) {
                 // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
                 return outPath + "/vue/api/" + pc.getModuleName()
-                        + "/" + tableInfo.getEntityName() + ".js";
+                        + "/" + toLowerCaseFirstOne(tableInfo.getEntityName()) + ".js";
+            }
+        });
+        focList.add(new FileOutConfig(vuePath) {
+            @SneakyThrows
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
+                return outPath + "/vue/view/" + pc.getModuleName()
+                        + "/" + toLowerCaseFirstOne(tableInfo.getEntityName()) + ".vue";
             }
         });
         cfg.setFileOutConfigList(focList);
@@ -148,7 +183,7 @@ public class CodeGenServiceImpl implements CodeGenService {
         strategy.setControllerMappingHyphenStyle(false);
         strategy.setInclude(genInfoDto.getTableNames());
         strategy.setControllerMappingHyphenStyle(true);
-        strategy.setTablePrefix(pc.getModuleName() + "_");
+        strategy.setTablePrefix(pc.getModuleName() + "_" );
         mpg.setStrategy(strategy);
         mpg.setTemplateEngine(new VelocityTemplateEngine());
         mpg.execute();
@@ -162,12 +197,12 @@ public class CodeGenServiceImpl implements CodeGenService {
      */
     private String checkDriverName(String url) {
         String driverClassName = null;
-        if (url.contains("jdbc:mysql://")) {
-            driverClassName = "com.mysql.jdbc.Driver";
-        } else if (url.contains("jdbc:oracle:thin:@//")) {
-            driverClassName = "oracle.jdbc.driver.OracleDriver";
-        } else if (url.contains("jdbc:jtds:sqlserver://")) {
-            driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+        if (url.contains(CodeGenConstant.MYSQL_DRIVER_STR)) {
+            driverClassName = CodeGenConstant.MYSQL_DRIVER;
+        } else if (url.contains(CodeGenConstant.ORACLE_DRIVER_STR)) {
+            driverClassName = CodeGenConstant.ORACLE_DRIVER;
+        } else if (url.contains(CodeGenConstant.SQLSERVER_DRIVER_STR)) {
+            driverClassName = CodeGenConstant.SQLSERVER_DRIVER;
         }
         return driverClassName;
     }
@@ -184,12 +219,26 @@ public class CodeGenServiceImpl implements CodeGenService {
             TableInfoListVo tableInfoListVo = new TableInfoListVo();
             BeanUtils.copyProperties(tableInfo, tableInfoListVo);
             List<String> fields = new ArrayList<>();
-            for (String field : tableInfo.getFieldNames().split(",")) {
+            for (String field : tableInfo.getFieldNames().split("," )) {
                 fields.add(field);
             }
             tableInfoListVo.setFields(fields);
             listVos.add(tableInfoListVo);
         }
         return listVos;
+    }
+
+    /**
+     * 首字母转小写
+     *
+     * @param s
+     * @return
+     */
+    private String toLowerCaseFirstOne(String s) {
+        if (Character.isLowerCase(s.charAt(0))) {
+            return s;
+        } else {
+            return (new StringBuilder()).append(Character.toLowerCase(s.charAt(0))).append(s.substring(1)).toString();
+        }
     }
 }

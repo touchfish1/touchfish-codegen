@@ -5,7 +5,9 @@ import ${package.Mapper}.${table.mapperName};
 import ${package.Service}.${table.serviceName};
 import ${superServiceImplClassPackage};
 import org.springframework.stereotype.Service;
-
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 /**
  * <p>
  * $!{table.comment} 服务实现类
@@ -22,5 +24,20 @@ open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperNam
 #else
 public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
 
+    /**
+     * 分页查询
+     * @param pageNum
+     * @param pageSize
+     * @param ${classname}Entity
+     * @return
+     */
+    @Override
+    public IPage<${entity}> queryPage(Integer pageNum, Integer pageSize, ${entity}Entity ${className}) {
+        IPage<${entity}>  ${className}IPage = new Page<>(pageNum, pageSize);
+        // 查询条件自己通过queryWrapper构建
+        LambdaQueryWrapper<${entity}> queryWrapper = new LambdaQueryWrapper<${entity}>();
+        IPage<${entity}> ${className}Page = baseMapper.selectPage(${className}IPage, queryWrapper);
+        return ${className}Page;
+    }
 }
 #end

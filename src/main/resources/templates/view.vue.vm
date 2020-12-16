@@ -1,0 +1,201 @@
+<template>
+    <div class="app-container">
+        <!-- 搜索框 -->
+##        <el-form :model="queryParams" :inline="true" class="demo-form-inline">
+##            <el-form-item label="查询条件" prop="key">
+##                <el-input v-model="queryParams.key" placeholder="条件" />
+##            </el-form-item>
+##            <el-form-item>
+##                <el-button type="primary" @click="handleQuery">查询</el-button>
+##            </el-form-item>
+##        </el-form>
+
+        <!-- 新增 -->
+        <el-row>
+            <el-col>
+                <el-button
+##                        v-hasPermi="['${package.ModuleName}:${className}:save']"
+                        type="primary"
+                        icon="el-icon-plus"
+                        size="mini"
+                        class="pan-btn tiffany-btn"
+                        @click="handleAdd"
+                >新增</el-button>
+            </el-col>
+        </el-row>
+
+        <!-- 列表 -->
+        <el-table
+                :data="dataList"
+                border
+                @selection-change="handleSelectionChange"
+                style="width: 100%;">
+            <el-table-column
+                    type="selection"
+                    header-align="center"
+                    align="center"
+                    width="50">
+            </el-table-column>
+#foreach($column in $table.fields)
+    <el-table-column
+            prop="${column.propertyName}"
+            header-align="center"
+            align="center"
+            label="${column.comment}">
+    </el-table-column>
+#end
+            <el-table-column
+                    fixed="right"
+                    header-align="center"
+                    align="center"
+                    width="150"
+                    label="操作">
+                <template slot-scope="scope">
+##                    <el-button type="text"  v-hasPermi="['${package.ModuleName}:${className}:update']" size="small" @click="handleUpdate(scope.row)">修改</el-button>
+##                    <el-button type="text"  v-hasPermi="['${package.ModuleName}:${className}:delete']" size="small" @click="deleteHandle(scope.row)">删除</el-button>
+                    <el-button type="text"  size="small" @click="handleUpdate(scope.row)">修改</el-button>
+                    <el-button type="text"  size="small" @click="deleteHandle(scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <!-- 分页 -->
+        <pagination
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
+        />
+
+        <!-- 增加or修改弹窗 -->
+        <el-dialog
+                :title="title" :visible.sync="visible" width="30%">
+            <el-form :model="dataForm" :rules="roles" ref="dataForm" @keyup.enter.native="submitHandler()" label-width="80px">
+#foreach($column in $table.fields)
+    #if($column.keyIdentityFlag)
+        <el-form-item label="${column.comment}" prop="${column.propertyName}">
+            <el-input v-model="dataForm.${column.propertyName}" placeholder="${column.comment}"></el-input>
+        </el-form-item>
+    #end
+#end
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+      <el-button @click="visible = false">取消</el-button>
+      <el-button type="primary" @click="submitHandler()">确定</el-button>
+    </span>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+    import { ${className}Save, ${className}List, ${className}Info, ${className}Update, ${className}Del } from '@/api/${package.ModuleName}/${className}'
+    export default {
+        data() {
+            return {
+                total: 0,
+                dataList: [],
+                visible: false,
+                title: '',
+                // 查询参数
+                queryParams: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    key: undefined
+                },
+                ids: [],
+                dataForm: {
+#foreach($column in $table.fields)
+    #if($column.keyIdentityFlag)
+        ${column.propertyName}: 0,
+    #else
+        ${column.propertyName}: ''#if($velocityCount != $columns.size()),#end
+    #end
+#end
+        }
+        , // 表单校验
+            roles: {
+                #foreach($column in $table.fields)
+                    #if($column.keyIdentityFlag)
+                        ${column.propertyName}: [
+                        { required: true, message: '${column.comments}不能为空', trigger: 'blur' }
+                    ]#if($velocityCount != $columns.size()),#end
+
+                    #end
+                #end
+            }
+        }
+        }, created() {
+            this.getList()
+        },
+        methods: {
+            // 获取列表
+            getList() {
+                    ${className}List(this.queryParams).then(res => {
+                    this.dataList = res.data
+                        if (this.dataList.length > 0) {
+                            this.total = res.total
+                        }
+                })
+            },
+            // 查询
+            handleQuery() {
+                this.queryParams.page = 1
+                this.getList()
+            },
+            // 新增
+            handleAdd() {
+                this.title = '新增'
+                this.visible = true
+            },
+            // 修改
+            handleUpdate(row) {
+                this.title = '修改'
+                this.visible = true
+                    ${className}info(row.id).then(res => {
+                    this.dataForm = res.data
+                })
+            },
+            // 删除
+            handleDelete(row) {
+                const id = row.id || this.ids
+                this.$confirm('是否确认删除编号为"' + id + '"的数据项?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(function() {
+                    return ${className}Del(JSON.stringify(id))
+                }).then(() => {
+                    this.getList()
+                    this.$message({ showClose: true, message: '删除成功', type: 'success' })
+                })
+            },
+            // 提交表单
+            submitHandler() {
+                if (this.dataForm.id === undefined || this.dataForm.id === 0) {
+                        ${className}Save(this.dataForm).then(resp => {
+                        if (resp.code === 200) {
+                            this.$message({showClose: true, message: '添加成功', type: 'success'})
+                            this.visible = false
+                            this.getList()
+                        }
+                    })
+                } else {
+                        ${className}Update(this.dataForm).then(resp => {
+                        if (resp.code === 200) {
+                            this.$message({showClose: true, message: '修改成功', type: 'success'})
+                            this.visible = false
+                            this.getList()
+                        }
+                    })
+                }
+            },
+            // 多选
+            handleSelectionChange(val) {
+                this.ids = val.map(item => item.id)
+            }
+        }
+    }
+</script>
+
+<style>
+</style>

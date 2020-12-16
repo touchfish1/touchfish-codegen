@@ -15,6 +15,6 @@ import ${superServiceClassPackage};
 interface ${table.serviceName} : ${superServiceClass}<${entity}>
 #else
 public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
-
+    IPage<${entity}> queryPage(Integer pageNum, Integer pageSize, ${entity} ${className});
 }
 #end

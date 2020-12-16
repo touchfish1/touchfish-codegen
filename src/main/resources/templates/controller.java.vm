@@ -2,7 +2,8 @@ package ${package.Controller};
 
 
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import ${package.Service}.${table.serviceName};
+import top.touchfish.common.R;
 #if(${restControllerStyle})
 import org.springframework.web.bind.annotation.RestController;
 #else
@@ -35,7 +36,82 @@ public class ${table.controllerName} extends ${superControllerClass} {
 #else
 public class ${table.controllerName} {
 #end
+    @Autowired
+    private ${entity}Service ${className}Service;
 
+    /**
+     * 分页查询
+     * @param pageNum
+     * @param pageSize
+     * @param ${classname}Entity
+     * @return
+     */
+    #if(${swagger2})
+    @ApiOperation(notes = "${entity}list接口", value = "list接口")
+    #end
+    @GetMapping("list")
+    public R list(Integer pageNum, Integer pageSize,${entity} ${className}) {
+        if (pageNum == null || pageNum < 0) {
+            pageNum = 1;
+        }
+        if (pageSize == null || pageSize < 0) {
+            pageSize = 10;
+        }
+        return R.success(${className}Service.queryPage(pageNum, pageSize, ${className}));
+    }
+
+    /**
+     * 信息
+     */
+    #if(${swagger2})
+    @ApiOperation(notes = "${entity}详情", value = "信息")
+    #end
+    @GetMapping("/info/{${pkName}}")
+        ##    @RequiresPermissions("${moduleName}:${pathName}:info")
+    public R info(@PathVariable("${pkName}") ${pkType} ${pkName}){
+        return R.success(${className}Service.getById(${pkName}));
+    }
+
+    /**
+    * 保存
+    */
+    #if(${swagger2})
+    @ApiOperation(notes = "${entity}保存", value = "保存")
+    #end
+    @PostMapping("/save")
+        ##    @RequiresPermissions("${moduleName}:${pathName}:save")
+    public R save(@RequestBody ${entity} ${className}){
+        ${className}Service.save(${className});
+
+        R.success();
+    }
+
+    /**
+     * 修改
+     */
+    #if(${swagger2})
+    @ApiOperation(notes = "${entity}修改", value = "修改")
+    #end
+    @PostMapping("/update")
+        ##    @RequiresPermissions("${moduleName}:${pathName}:update")
+    public R update(@RequestBody ${entity} ${className}){
+        ${className}Service.updateById(${className});
+
+        R.success();
+    }
+
+    /**
+     * 删除
+     */
+    #if(${swagger2})
+    @ApiOperation(notes = "${entity}批量删除", value = "删除")
+    #end
+    @DeleteMapping("/delete/{ids}")
+        ##    @RequiresPermissions("${moduleName}:${pathName}:delete")
+    public R delete(@PathVariable ${pkType}[] ${pkName}s){
+        ${className}Service.removeByIds(Arrays.asList(${pkName}s));
+        R.success();
+    }
 }
 
 #end
