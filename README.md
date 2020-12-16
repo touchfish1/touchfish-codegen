@@ -9,7 +9,7 @@ mybatisplus的可视化代码生成
 
 ### 特点
 - 可以生成一般的entity service mapper xml controller
-- 在controller中自带了基本的crud接口
+- 在controller中自带了基本的crud以及分页查询接口
 - 生成了基于vue-admin-template的api和vue 直接复制粘贴可用
 
 ## 使用
