@@ -15,24 +15,25 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class PageResult<T> {
-    /**
-     * 总条数
-     */
-    private Long total;
 
-    /**
-     * 页码
-     */
-    private int pageNumber;
+	/**
+	 * 总条数
+	 */
+	private Long total;
 
-    /**
-     * 每页结果数
-     */
-    private int pageSize;
+	/**
+	 * 页码
+	 */
+	private int pageNumber;
 
-    /**
-     * 结果集
-     */
-    private List<T> list;
+	/**
+	 * 每页结果数
+	 */
+	private int pageSize;
+
+	/**
+	 * 结果集
+	 */
+	private List<T> list;
+
 }
-

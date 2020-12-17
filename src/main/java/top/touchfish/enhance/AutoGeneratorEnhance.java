@@ -16,27 +16,28 @@ import java.util.List;
  * @createTime 2020-12-14 23:48:00
  */
 public class AutoGeneratorEnhance extends AutoGenerator {
-    ConfigBuilder configBuilder;
-    private AbstractTemplateEngine templateEngine;
-    /**
-     * 复写父类的方法 释放TableInfo
-     *
-     * @param configBuilder
-     * @return
-     */
-    @Override
-    public List<TableInfo> getAllTableInfoList(ConfigBuilder configBuilder) {
-        return super.getAllTableInfoList(configBuilder);
-    }
 
-    /**
-     * 通过dataSourceConfig构建ConfigBuilder
-     *
-     * @param dataSourceConfig
-     * @return
-     */
-    public ConfigBuilder builder(DataSourceConfig dataSourceConfig) {
-        return new ConfigBuilder(null, dataSourceConfig, null, null, null);
-    }
+	ConfigBuilder configBuilder;
+
+	private AbstractTemplateEngine templateEngine;
+
+	/**
+	 * 复写父类的方法 释放TableInfo
+	 * @param configBuilder
+	 * @return
+	 */
+	@Override
+	public List<TableInfo> getAllTableInfoList(ConfigBuilder configBuilder) {
+		return super.getAllTableInfoList(configBuilder);
+	}
+
+	/**
+	 * 通过dataSourceConfig构建ConfigBuilder
+	 * @param dataSourceConfig
+	 * @return
+	 */
+	public ConfigBuilder builder(DataSourceConfig dataSourceConfig) {
+		return new ConfigBuilder(null, dataSourceConfig, null, null, null);
+	}
 
 }

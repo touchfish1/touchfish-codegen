@@ -15,7 +15,11 @@ import java.util.List;
  */
 @Data
 public class TableInfoListVo implements Serializable {
-    public String name;
-    public String comment;
-    public List<String> fields;
+
+	public String name;
+
+	public String comment;
+
+	public List<String> fields;
+
 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class R<T> {
+
 	/**
 	 * 状态码
 	 */

@@ -14,20 +14,19 @@ import java.io.IOException;
  * @createTime 2020-12-14 23:27:00
  */
 public interface CodeGenService {
-    /**
-     * 查询TableInfo接口
-     *
-     * @param tableInfoDto
-     * @return
-     */
-    public R getTableInfo(TableInfoDto tableInfoDto);
 
-    /**
-     * 生成代码下载
-     *
-     * @param genInfoDto
-     * @return
-     */
-    public byte[] generatorCode(GenInfoDto genInfoDto) throws IOException;
+	/**
+	 * 查询TableInfo接口
+	 * @param tableInfoDto
+	 * @return
+	 */
+	public R getTableInfo(TableInfoDto tableInfoDto);
+
+	/**
+	 * 生成代码下载
+	 * @param genInfoDto
+	 * @return
+	 */
+	public byte[] generatorCode(GenInfoDto genInfoDto) throws IOException;
 
 }

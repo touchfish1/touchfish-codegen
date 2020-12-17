@@ -25,39 +25,38 @@ import java.io.IOException;
  */
 @RestController()
 public class CodeGenController {
-    @Autowired
-    CodeGenService codeGenService;
 
-    /**
-     * 查询表信息
-     *
-     * @param tableInfoDto
-     * @return
-     */
-    @PostMapping("getTableInfo")
-    public R getTableInfo(@RequestBody TableInfoDto tableInfoDto) {
-        return R.success(codeGenService.getTableInfo(tableInfoDto));
-    }
+	@Autowired
+	CodeGenService codeGenService;
 
-    /**
-     * 下载生成的代码
-     *
-     * @param genInfoDto
-     * @param response
-     * @throws IOException
-     */
-    @PostMapping("generatorCode")
-    public void generatorCode(@RequestBody GenInfoDto genInfoDto, HttpServletResponse response) throws IOException {
-        byte[] bytes = codeGenService.generatorCode(genInfoDto);
-        response.reset();
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", "codegen"));
-        response.addHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(bytes.length));
-        response.setContentType("application/octet-stream; charset=UTF-8");
+	/**
+	 * 查询表信息
+	 * @param tableInfoDto
+	 * @return
+	 */
+	@PostMapping("getTableInfo")
+	public R getTableInfo(@RequestBody TableInfoDto tableInfoDto) {
+		return R.success(codeGenService.getTableInfo(tableInfoDto));
+	}
 
-        IoUtil.write(response.getOutputStream(), Boolean.TRUE, bytes);
-        // 删除文件
-        String codegen = ResourceUtils.getURL("classpath:codegen").getPath();
-        FileUtil.del(codegen);
-    }
+	/**
+	 * 下载生成的代码
+	 * @param genInfoDto
+	 * @param response
+	 * @throws IOException
+	 */
+	@PostMapping("generatorCode")
+	public void generatorCode(@RequestBody GenInfoDto genInfoDto, HttpServletResponse response) throws IOException {
+		byte[] bytes = codeGenService.generatorCode(genInfoDto);
+		response.reset();
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s.zip", "codegen"));
+		response.addHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(bytes.length));
+		response.setContentType("application/octet-stream; charset=UTF-8");
+
+		IoUtil.write(response.getOutputStream(), Boolean.TRUE, bytes);
+		// 删除文件
+		String codegen = ResourceUtils.getURL("classpath:codegen").getPath();
+		// FileUtil.del(codegen);
+	}
 
 }

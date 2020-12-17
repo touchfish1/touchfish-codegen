@@ -8,28 +8,43 @@ package top.touchfish.common;
  * @createTime 2020-12-17 00:48:00
  */
 public class CodeGenConstant {
-    /**
-     * mysql连接驱动字符串
-     */
-    public static String MYSQL_DRIVER_STR ="jdbc:mysql://";
-    /**
-     * Oracle连接驱动字符串
-     */
-    public static String ORACLE_DRIVER_STR ="jdbc:oracle:thin:@//";
-    /**
-     * SqlServer连接驱动字符串
-     */
-    public static String SQLSERVER_DRIVER_STR ="jdbc:jtds:sqlserver://";
-    /**
-     * mysql连接驱动
-     */
-    public static String MYSQL_DRIVER ="com.mysql.jdbc.Driver";
-    /**
-     * Oracle连接驱动
-     */
-    public static String ORACLE_DRIVER ="oracle.jdbc.driver.OracleDriver";
-    /**
-     * SqlServer连接驱动
-     */
-    public static String SQLSERVER_DRIVER ="com.microsoft.sqlserver.jdbc.SQLServerDriver";
+
+	/**
+	 * mysql连接驱动字符串
+	 */
+	public static String MYSQL_DRIVER_STR = "jdbc:mysql://";
+
+	/**
+	 * Oracle连接驱动字符串
+	 */
+	public static String ORACLE_DRIVER_STR = "jdbc:oracle:thin:@//";
+
+	/**
+	 * SqlServer连接驱动字符串
+	 */
+	public static String SQLSERVER_DRIVER_STR = "jdbc:jtds:sqlserver://";
+
+	/**
+	 * mysql连接驱动
+	 */
+	public static String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+
+	/**
+	 * Oracle连接驱动
+	 */
+	public static String ORACLE_DRIVER = "oracle.jdbc.driver.OracleDriver";
+
+	/**
+	 * SqlServer连接驱动
+	 */
+	public static String SQLSERVER_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+
+	public static String BASE_PATH = "classpath:codegen";
+
+	public static String XML_PATH = "/templates/mapper.xml.vm";
+
+	public static String API_PATH = "/templates/api.js.vm";
+
+	public static String VUE_PATH = "/templates/view.vue.vm";
+
 }
