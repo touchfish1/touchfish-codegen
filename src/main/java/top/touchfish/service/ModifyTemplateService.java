@@ -1,7 +1,10 @@
 package top.touchfish.service;
 
+import top.touchfish.dto.FileDto;
 import top.touchfish.dto.TemplateDto;
 import top.touchfish.dto.TemplateListDto;
+
+import java.io.FileNotFoundException;
 
 /**
  * @author chengccn
@@ -12,9 +15,26 @@ import top.touchfish.dto.TemplateListDto;
  */
 public interface ModifyTemplateService {
 
-    Object listFiles(TemplateListDto templateListDto);
+	/**
+	 * 模板文件列表
+	 * @param templateListDto
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	Object listFiles(TemplateListDto templateListDto) throws FileNotFoundException;
 
-    Object showCode(TemplateListDto templateListDto);
+	/**
+	 * 获取模板文件内容
+	 * @param fileDto
+	 * @return
+	 */
+	Object showCode(FileDto fileDto);
 
-    Object modifyTemplate(TemplateDto templateDto);
+	/**
+	 * 修改模板
+	 * @param templateDto
+	 * @return
+	 */
+	Object modifyTemplate(TemplateDto templateDto) throws FileNotFoundException;
+
 }

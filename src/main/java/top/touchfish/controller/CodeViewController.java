@@ -3,7 +3,7 @@ package top.touchfish.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.touchfish.common.R;
-import top.touchfish.dto.CodeViewDto;
+import top.touchfish.dto.FileDto;
 import top.touchfish.dto.FileListDto;
 import top.touchfish.service.CodeViewService;
 
@@ -36,11 +36,12 @@ public class CodeViewController {
 
 	/**
 	 * 查看生成代码详情
-	 * @param codeViewDto
+	 * @param fileDto
 	 * @return
 	 */
 	@PostMapping("showCode")
-	public R showCode(@RequestBody CodeViewDto codeViewDto){
-		return R.success(codeViewService.showCode(codeViewDto));
+	public R showCode(@RequestBody FileDto fileDto) {
+		return R.success(codeViewService.showCode(fileDto));
 	}
+
 }

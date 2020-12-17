@@ -1,5 +1,7 @@
 package top.touchfish.dto;
 
+import lombok.Data;
+
 /**
  * @author chengccn
  * @version 1.0.0
@@ -7,6 +9,9 @@ package top.touchfish.dto;
  * @Description
  * @createTime 2020-12-18 00:54:00
  */
+@Data
 public class TemplateListDto {
-    public String templateName;
+
+	public String templateName;
+
 }

@@ -1,6 +1,6 @@
 package top.touchfish.service;
 
-import top.touchfish.dto.CodeViewDto;
+import top.touchfish.dto.FileDto;
 import top.touchfish.dto.FileListDto;
 import top.touchfish.vo.GenFileListVo;
 
@@ -24,5 +24,11 @@ public interface CodeViewService {
 	 */
 	GenFileListVo listFiles(FileListDto fileListDto) throws FileNotFoundException;
 
-	Object showCode(CodeViewDto codeViewDto);
+	/**
+	 * 查看生成代码详情
+	 * @param fileDto
+	 * @return
+	 */
+	Object showCode(FileDto fileDto);
+
 }

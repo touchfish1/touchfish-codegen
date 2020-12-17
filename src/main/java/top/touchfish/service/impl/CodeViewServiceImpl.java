@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import top.touchfish.common.CodeGenConstant;
-import top.touchfish.dto.CodeViewDto;
+import top.touchfish.dto.FileDto;
 import top.touchfish.dto.FileListDto;
 import top.touchfish.service.CodeViewService;
 import top.touchfish.vo.FileInfoVo;
@@ -28,49 +28,52 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CodeViewServiceImpl implements CodeViewService {
 
-    /**
-     * 查询生成的文件的列表
-     *
-     * @param fileListDto
-     * @return
-     * @throws FileNotFoundException
-     */
-    @Override
-    public GenFileListVo listFiles(FileListDto fileListDto) throws FileNotFoundException {
-        String moduleName = fileListDto.getModuleName();
-        String packageName = "/" + fileListDto.getPackageName().replace(".", "/") + "/" + moduleName + "/";
-        String basePath = ResourceUtils.getURL(CodeGenConstant.BASE_PATH).getPath();
-        String entityPath = basePath + packageName + "entity";
-        String controllerPath = basePath + packageName + "controller";
-        String servicePath = basePath + packageName + "service";
-        String serviceImplPath = basePath + packageName + "service/impl";
-        String mapperPath = basePath + "/mapper/" + moduleName;
-        String jsPath = basePath + "/vue//api/" + moduleName;
-        String viewPath = basePath + "/vue/view/" + moduleName;
-        String xmlPath = basePath + "/mapper/" + moduleName;
+	/**
+	 * 查询生成的文件的列表
+	 * @param fileListDto
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	@Override
+	public GenFileListVo listFiles(FileListDto fileListDto) throws FileNotFoundException {
+		String moduleName = fileListDto.getModuleName();
+		String packageName = "/" + fileListDto.getPackageName().replace(".", "/") + "/" + moduleName + "/";
+		String basePath = ResourceUtils.getURL(CodeGenConstant.BASE_PATH).getPath();
+		String entityPath = basePath + packageName + "entity";
+		String controllerPath = basePath + packageName + "controller";
+		String servicePath = basePath + packageName + "service";
+		String serviceImplPath = basePath + packageName + "service/impl";
+		String mapperPath = basePath + "/mapper/" + moduleName;
+		String jsPath = basePath + "/vue//api/" + moduleName;
+		String viewPath = basePath + "/vue/view/" + moduleName;
+		String xmlPath = basePath + "/mapper/" + moduleName;
 
-        return GenFileListVo.builder().entity(build(entityPath)).controller(build(controllerPath))
-                .service(build(servicePath)).serviceImpl(build(serviceImplPath)).mapper(build(mapperPath))
-                .js(build(jsPath)).view(build(viewPath)).xml(build(xmlPath)).build();
-    }
+		return GenFileListVo.builder().entity(build(entityPath)).controller(build(controllerPath))
+				.service(build(servicePath)).serviceImpl(build(serviceImplPath)).mapper(build(mapperPath))
+				.js(build(jsPath)).view(build(viewPath)).xml(build(xmlPath)).build();
+	}
 
-    @Override
-    public Object showCode(CodeViewDto codeViewDto) {
-        FileReader fileReader = new FileReader(codeViewDto.getFilePath());
-        return fileReader.readString();
-    }
+	/**
+	 * 查看生成代码详情
+	 * @param fileDto
+	 * @return
+	 */
+	@Override
+	public Object showCode(FileDto fileDto) {
+		FileReader fileReader = new FileReader(fileDto.getFilePath());
+		return fileReader.readString();
+	}
 
-    /**
-     * 传参构建List<FileInfoVo>
-     *
-     * @param path
-     * @return
-     * @throws FileNotFoundException
-     */
-    public List<FileInfoVo> build(String path) throws FileNotFoundException {
-        return FileUtil.loopFiles(path).stream()
-                .map(f -> FileInfoVo.builder().fileName(f.getName()).filePath(f.getPath()).build())
-                .collect(Collectors.toList());
-    }
+	/**
+	 * 传参构建List<FileInfoVo>
+	 * @param path
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public List<FileInfoVo> build(String path) throws FileNotFoundException {
+		return FileUtil.loopFiles(path).stream()
+				.map(f -> FileInfoVo.builder().fileName(f.getName()).filePath(f.getPath()).build())
+				.collect(Collectors.toList());
+	}
 
 }

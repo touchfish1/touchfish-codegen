@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.touchfish.common.R;
-import top.touchfish.dto.CodeViewDto;
-import top.touchfish.dto.FileListDto;
-import top.touchfish.dto.TemplateDto;
-import top.touchfish.dto.TemplateListDto;
+import top.touchfish.dto.*;
 import top.touchfish.service.ModifyTemplateService;
 
 import java.io.FileNotFoundException;
@@ -41,12 +38,12 @@ public class ModifyTemplateController {
 
 	/**
 	 * 获取模板文件内容
-	 * @param templateListDto
+	 * @param fileDto
 	 * @return
 	 */
 	@PostMapping("showCode")
-	public R showCode(@RequestBody TemplateListDto templateListDto){
-		return R.success(modifyTemplateService.showCode(templateListDto));
+	public R showCode(@RequestBody FileDto fileDto) {
+		return R.success(modifyTemplateService.showCode(fileDto));
 	}
 
 	/**
@@ -55,7 +52,8 @@ public class ModifyTemplateController {
 	 * @return
 	 */
 	@PostMapping("modifyTemplate")
-	public R modifyTemplate(@RequestBody TemplateDto templateDto){
+	public R modifyTemplate(@RequestBody TemplateDto templateDto) throws FileNotFoundException {
 		return R.success(modifyTemplateService.modifyTemplate(templateDto));
 	}
+
 }
