@@ -48,6 +48,6 @@ jobs:
         run: |
           echo '=====开始上传镜像====='
           echo '=====开始上传touchfish_admin====='
-          docker push egistry.cn-hangzhou.aliyuncs.com/chengccn/touchfish-codegen
+          docker push registry.cn-hangzhou.aliyuncs.com/chengccn/touchfish-codegen
 
           echo '=====镜像上传结束====='
