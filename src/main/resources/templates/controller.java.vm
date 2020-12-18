@@ -43,7 +43,7 @@ public class ${table.controllerName} {
      * 分页查询
      * @param pageNum
      * @param pageSize
-     * @param ${classname}Entity
+     * @param ${className}
      * @return
      */
     #if(${swagger2})

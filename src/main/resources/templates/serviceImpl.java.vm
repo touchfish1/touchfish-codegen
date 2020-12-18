@@ -28,11 +28,11 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
      * 分页查询
      * @param pageNum
      * @param pageSize
-     * @param ${classname}Entity
+     * @param ${entity}
      * @return
      */
     @Override
-    public IPage<${entity}> queryPage(Integer pageNum, Integer pageSize, ${entity}Entity ${className}) {
+    public IPage<${entity}> queryPage(Integer pageNum, Integer pageSize, ${entity} ${className}) {
         IPage<${entity}>  ${className}IPage = new Page<>(pageNum, pageSize);
         // 查询条件自己通过queryWrapper构建
         LambdaQueryWrapper<${entity}> queryWrapper = new LambdaQueryWrapper<${entity}>();

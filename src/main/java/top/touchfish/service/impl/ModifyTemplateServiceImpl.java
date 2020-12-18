@@ -26,58 +26,53 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ModifyTemplateServiceImpl implements ModifyTemplateService {
 
-    /**
-     * 模板文件列表
-     *
-     * @param templateListDto
-     * @return
-     * @throws FileNotFoundException
-     */
-    @Override
-    public Object listFiles(TemplateListDto templateListDto) throws FileNotFoundException {
-        // 现在就只有一套前端模板 写死路径 以后多了几套从参数中选择
-        String templatesPath = ResourceUtils.getURL("classpath:templates").getPath();
+	/**
+	 * 模板文件列表
+	 * @param templateListDto
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	@Override
+	public Object listFiles(TemplateListDto templateListDto) throws FileNotFoundException {
+		// 现在就只有一套前端模板 写死路径 以后多了几套从参数中选择
+		String templatesPath = ResourceUtils.getURL("classpath:templates").getPath();
 
-        return FileUtil.loopFiles(templatesPath).stream()
-                .map(f -> FileInfoVo.builder().fileName(f.getName()).filePath(f.getPath()).build())
-                .collect(Collectors.toList());
-    }
+		return FileUtil.loopFiles(templatesPath).stream()
+				.map(f -> FileInfoVo.builder().fileName(f.getName()).filePath(f.getPath()).build())
+				.collect(Collectors.toList());
+	}
 
-    /**
-     * 获取模板文件内容
-     *
-     * @param fileDto
-     * @return
-     */
-    @Override
-    public Object showCode(FileDto fileDto) {
-        FileReader fileReader = new FileReader(fileDto.getFilePath());
-        return fileReader.readString();
-    }
+	/**
+	 * 获取模板文件内容
+	 * @param fileDto
+	 * @return
+	 */
+	@Override
+	public Object showCode(FileDto fileDto) {
+		FileReader fileReader = new FileReader(fileDto.getFilePath());
+		return fileReader.readString();
+	}
 
-    /**
-     * 修改模板
-     *
-     * @param templateDto
-     * @return
-     */
-    @Override
-    public Object modifyTemplate(TemplateDto templateDto) throws FileNotFoundException {
-        // 现在就只有一套前端模板 写死路径 以后多了几套从参数中选择
-        /**
-         * 1 修改两个地方的模板文件
-         *   a) 项目代码目录的templates下的模板文件
-         *   b) 项目当前classpath:templates下的模板文件
-         */
-        String projectPath = System.getProperty("user.dir");
-        String projectTemplatesPath = projectPath + "resources" + "templates" + templateDto.getFileName();
-        // 修改project下的文件
-        FileWriter projectWriter = new FileWriter(projectTemplatesPath);
-        projectWriter.write(templateDto.getModifyData());
-        // 修改classpath下的文件
-        FileWriter writer = new FileWriter(templateDto.getFilePath());
-        writer.write(templateDto.getModifyData());
-        return null;
-    }
+	/**
+	 * 修改模板
+	 * @param templateDto
+	 * @return
+	 */
+	@Override
+	public Object modifyTemplate(TemplateDto templateDto) throws FileNotFoundException {
+		// 现在就只有一套前端模板 写死路径 以后多了几套从参数中选择
+		/**
+		 * 1 修改两个地方的模板文件 a) 项目代码目录的templates下的模板文件 b) 项目当前classpath:templates下的模板文件
+		 */
+		String projectPath = System.getProperty("user.dir");
+		String projectTemplatesPath = projectPath + "resources" + "templates" + templateDto.getFileName();
+		// 修改project下的文件
+		FileWriter projectWriter = new FileWriter(projectTemplatesPath);
+		projectWriter.write(templateDto.getModifyData());
+		// 修改classpath下的文件
+		FileWriter writer = new FileWriter(templateDto.getFilePath());
+		writer.write(templateDto.getModifyData());
+		return null;
+	}
 
 }

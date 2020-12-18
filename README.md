@@ -201,11 +201,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 分页查询
      * @param pageNum
      * @param pageSize
-     * @param ${classname}Entity
+     * @param user
      * @return
      */
     @Override
-    public IPage<User> queryPage(Integer pageNum, Integer pageSize, UserEntity user) {
+    public IPage<User> queryPage(Integer pageNum, Integer pageSize, User user) {
         IPage<User>  userIPage = new Page<>(pageNum, pageSize);
         // 查询条件自己通过queryWrapper构建
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>();
@@ -243,7 +243,7 @@ public class UserController {
    * 
    * @param pageNum
    * @param pageSize
-   * @param ${classname}Entity
+   * @param user
    * @return
    */
   @GetMapping("list")
